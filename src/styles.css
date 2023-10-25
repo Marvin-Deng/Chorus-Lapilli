@@ -81,6 +81,12 @@
     content: '';
     display: table;
   }
+
+  .reset {
+    margin-top: 20px;
+    width: 80px;
+    height: 40px;
+  }
   
   .status {
     margin-bottom: 10px;

@@ -1,4 +1,4 @@
-export default function Square({ value, onSquareClick }) {
+const Square = ({ value, onSquareClick }) => {
 
     return (
         <button
@@ -9,3 +9,5 @@ export default function Square({ value, onSquareClick }) {
         </button>
     )
 }
+
+export default Square

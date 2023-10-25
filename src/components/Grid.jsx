@@ -3,30 +3,38 @@ import calculateWinner from '../utils/CalculateWinner'
 import isValidMove from '../utils/CalculateMove'
 import { useState } from 'react'
 
-export default function Grid() {
+const Grid = () => {
 
     const [xIsNext, setXIsNext] = useState(true)
-    const [squares, setSquares] = useState(Array(9).fill(null));
-    const [selectedSquare, setSelectedSquare] = useState(null);
+    const [squares, setSquares] = useState(Array(9).fill(null))
+    const [selectedSquare, setSelectedSquare] = useState(null)
     const [turnX, setTurnX] = useState(1)
     const [turnO, setTurnO] = useState(1)
 
-    const winner = calculateWinner(squares);
-    let status;
+    const winner = calculateWinner(squares)
+    let status
 
     if (winner) {
-        status = "Winner: " + winner;
+        status = "Winner: " + winner
     } else {
-        status = "Next player: " + (xIsNext ? "X" : "O");
+        status = "Next player: " + (xIsNext ? "X" : "O")
     }
 
-    function handleClick(i) {
+    const handleReset = () => {
+        setXIsNext(true)
+        setSquares(Array(9).fill(null))
+        setSelectedSquare(null)
+        setTurnX(1)
+        setTurnO(1)
+    }
+
+    const handleMove = (i) => {
     
-        const nextSquares = squares.slice();
+        const nextSquares = squares.slice()
         const currSquare = squares[i]
 
         // TicTacToe
-        if (xIsNext && turnX < 4) {
+        if (xIsNext && turnX <= 3) {
             if (currSquare) {
                 return;
             }
@@ -34,9 +42,9 @@ export default function Grid() {
             setTurnX(prevTurnX => prevTurnX + 1)
             setXIsNext(!xIsNext)
         }
-        else if (!xIsNext && turnO < 4) {
+        else if (!xIsNext && turnO <= 3) {
             if (currSquare) {
-                return;
+                return
             }
             nextSquares[i] = "O"
             setTurnO(prevTurnO => prevTurnO + 1)
@@ -51,13 +59,13 @@ export default function Grid() {
                 }
             }
             else if (!currSquare && isValidMove(i, selectedSquare)) {
-                nextSquares[i] = nextSquares[selectedSquare];
+                status = "Player: " + (xIsNext ? "X" : "O") + "move a piece"
+                nextSquares[i] = nextSquares[selectedSquare]
                 nextSquares[selectedSquare] = null
                 setSelectedSquare(null)
                 setXIsNext(!xIsNext)
-            }
+            } 
         }
-
         setSquares(nextSquares)
     }
 
@@ -67,45 +75,53 @@ export default function Grid() {
             <div className="board-row">
                 <Square
                     value={squares[0]}
-                    onSquareClick={() => handleClick(0)}
+                    onSquareClick={() => handleMove(0)}
                 />
                 <Square
                     value={squares[1]}
-                    onSquareClick={() => handleClick(1)}
+                    onSquareClick={() => handleMove(1)}
                 />
                 <Square
                     value={squares[2]}
-                    onSquareClick={() => handleClick(2)}
+                    onSquareClick={() => handleMove(2)}
                 />
             </div>
             <div className="board-row">
                 <Square
                     value={squares[3]}
-                    onSquareClick={() => handleClick(3)}
+                    onSquareClick={() => handleMove(3)}
                 />
                 <Square
                     value={squares[4]}
-                    onSquareClick={() => handleClick(4)}
+                    onSquareClick={() => handleMove(4)}
                 />
                 <Square
                     value={squares[5]}
-                    onSquareClick={() => handleClick(5)}
+                    onSquareClick={() => handleMove(5)}
                 />
             </div>
             <div className="board-row">
                 <Square
                     value={squares[6]}
-                    onSquareClick={() => handleClick(6)}
+                    onSquareClick={() => handleMove(6)}
                 />
                 <Square
                     value={squares[7]}
-                    onSquareClick={() => handleClick(7)}
+                    onSquareClick={() => handleMove(7)}
                 />
                 <Square
                     value={squares[8]}
-                    onSquareClick={() => handleClick(8)}
+                    onSquareClick={() => handleMove(8)}
                 />
             </div>
+            <button 
+                className = "reset"
+                onClick = {handleReset}
+            >
+                RESET
+            </button>
         </div>
     );
 }
+
+export default Grid
