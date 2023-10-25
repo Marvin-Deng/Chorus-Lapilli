@@ -1,16 +1,19 @@
 import Square from './Square'
 import calculateWinner from '../utils/CalculateWinner'
+import isValidMove from '../utils/CalculateMove'
 import { useState } from 'react'
 
 export default function Grid() {
 
     const [xIsNext, setXIsNext] = useState(true)
     const [squares, setSquares] = useState(Array(9).fill(null));
-    const [turnX, setTurnX] = useState(0)
-    const [turnY, setTurnY] = useState(0)
+    const [selectedSquare, setSelectedSquare] = useState(null);
+    const [turnX, setTurnX] = useState(1)
+    const [turnO, setTurnO] = useState(1)
 
     const winner = calculateWinner(squares);
     let status;
+
     if (winner) {
         status = "Winner: " + winner;
     } else {
@@ -18,20 +21,44 @@ export default function Grid() {
     }
 
     function handleClick(i) {
-        if (squares[i]) {
-            return;
-        }
-
+    
         const nextSquares = squares.slice();
+        const currSquare = squares[i]
 
-        if (xIsNext) {
-            nextSquares[i] = "X";
-        } else {
-            nextSquares[i] = "O";
+        // TicTacToe
+        if (xIsNext && turnX < 4) {
+            if (currSquare) {
+                return;
+            }
+            nextSquares[i] = "X"
+            setTurnX(prevTurnX => prevTurnX + 1)
+            setXIsNext(!xIsNext)
+        }
+        else if (!xIsNext && turnO < 4) {
+            if (currSquare) {
+                return;
+            }
+            nextSquares[i] = "O"
+            setTurnO(prevTurnO => prevTurnO + 1)
+            setXIsNext(!xIsNext)
         }
 
-        setXIsNext(!xIsNext);
-        setSquares(nextSquares);
+        // Chorus lapilli
+        else {
+            if (selectedSquare === null) {
+                if (currSquare && currSquare === (xIsNext ? 'X' : 'O')) {
+                    setSelectedSquare(i)
+                }
+            }
+            else if (!currSquare && isValidMove(i, selectedSquare)) {
+                nextSquares[i] = nextSquares[selectedSquare];
+                nextSquares[selectedSquare] = null
+                setSelectedSquare(null)
+                setXIsNext(!xIsNext)
+            }
+        }
+
+        setSquares(nextSquares)
     }
 
     return (
