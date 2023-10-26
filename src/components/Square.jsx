@@ -1,8 +1,8 @@
-const Square = ({ value, onSquareClick }) => {
+const Square = ({ value, onSquareClick, isSelected }) => {
 
     return (
         <button
-            className="square"
+            className={`square ${isSelected ? 'selected' : ''}`}
             onClick={onSquareClick}
         >
             {value}

@@ -75,6 +75,10 @@
     text-align: center;
     width: 50px;
   }
+
+  .square.selected {
+    background: #64e09a;
+  }
   
   .board-row:after {
     clear: both;

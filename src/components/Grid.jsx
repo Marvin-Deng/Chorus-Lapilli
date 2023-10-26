@@ -1,23 +1,27 @@
 import Square from './Square'
-import calculateWinner from '../utils/CalculateWinner'
-import isValidMove from '../utils/CalculateMove'
+import { calculateWinner, getWinningMoves } from '../utils/CalculateWinner'
+import { isValidMove, getWinningSquares } from '../utils/CalculateMove'
 import { useState } from 'react'
 
 const Grid = () => {
-
     const [xIsNext, setXIsNext] = useState(true)
     const [squares, setSquares] = useState(Array(9).fill(null))
     const [selectedSquare, setSelectedSquare] = useState(null)
     const [turnX, setTurnX] = useState(1)
     const [turnO, setTurnO] = useState(1)
+    const allPositions = new Set(Array.from({ length: 9 }, (_, index) => index))
 
     const winner = calculateWinner(squares)
     let status
 
     if (winner) {
         status = "Winner: " + winner
-    } else {
-        status = "Next player: " + (xIsNext ? "X" : "O")
+    } 
+    else {
+        status = "Turn: " + (xIsNext ? "X" : "O")
+        if ((squares[4] === 'X' && xIsNext && turnX > 3) || (squares[4] === 'O' && !xIsNext && turnO > 3)) {
+            status = status + " owns the center square"
+        }
     }
 
     const handleReset = () => {
@@ -29,94 +33,79 @@ const Grid = () => {
     }
 
     const handleMove = (i) => {
-    
         const nextSquares = squares.slice()
         const currSquare = squares[i]
 
-        // TicTacToe
-        if (xIsNext && turnX <= 3) {
+        if ((xIsNext && turnX <= 3) || (!xIsNext && turnO <= 3)) {
             if (currSquare) {
                 return;
             }
-            nextSquares[i] = "X"
-            setTurnX(prevTurnX => prevTurnX + 1)
-            setXIsNext(!xIsNext)
-        }
-        else if (!xIsNext && turnO <= 3) {
-            if (currSquare) {
-                return
-            }
-            nextSquares[i] = "O"
-            setTurnO(prevTurnO => prevTurnO + 1)
-            setXIsNext(!xIsNext)
-        }
-
-        // Chorus lapilli
-        else {
-            if (selectedSquare === null) {
-                if (currSquare && currSquare === (xIsNext ? 'X' : 'O')) {
-                    setSelectedSquare(i)
-                }
-            }
-            else if (!currSquare && isValidMove(i, selectedSquare)) {
-                status = "Player: " + (xIsNext ? "X" : "O") + "move a piece"
-                nextSquares[i] = nextSquares[selectedSquare]
-                nextSquares[selectedSquare] = null
-                setSelectedSquare(null)
-                setXIsNext(!xIsNext)
+            nextSquares[i] = xIsNext ? 'X' : 'O';
+            if (xIsNext) {
+                setTurnX(prevTurnX => prevTurnX + 1)
             } 
+            else {
+                setTurnO(prevTurnO => prevTurnO + 1)
+            }
+            setXIsNext(!xIsNext)
+        }
+        else if ((xIsNext && nextSquares[4] == 'X') || (!xIsNext && nextSquares[4] == 'O')) {
+            const winningMoves = getWinningMoves(nextSquares[4], squares)
+            const winningSquares = getWinningSquares(nextSquares[4], squares, winningMoves)
+            
+            if (winningSquares.has(i)) {
+                selectPiece(i)
+            } 
+            else if (selectedSquare === 4) {
+                movePiece(i, nextSquares, allPositions)
+            }
+            else {
+                movePiece(i, nextSquares, new Set(winningMoves))
+            }
+        }
+        else {
+            selectPiece(i)
+            movePiece(i, nextSquares, allPositions)
         }
         setSquares(nextSquares)
+    }
+
+    const selectPiece = (i) => {
+        if (squares[i] != null && squares[i] === (xIsNext ? 'X' : 'O')) {
+            setSelectedSquare(i)
+        }
+    }
+
+    const movePiece = (i, nextSquares, validMoves) => {
+        if (validMoves.has(i) && selectedSquare != null && squares[i] === null && isValidMove(selectedSquare, i)) {
+            nextSquares[i] = nextSquares[selectedSquare]
+            nextSquares[selectedSquare] = null
+            setSelectedSquare(null)
+            setXIsNext(!xIsNext)
+        }
     }
 
     return (
         <div className="grid">
             <div className="status">{status}</div>
-            <div className="board-row">
-                <Square
-                    value={squares[0]}
-                    onSquareClick={() => handleMove(0)}
-                />
-                <Square
-                    value={squares[1]}
-                    onSquareClick={() => handleMove(1)}
-                />
-                <Square
-                    value={squares[2]}
-                    onSquareClick={() => handleMove(2)}
-                />
-            </div>
-            <div className="board-row">
-                <Square
-                    value={squares[3]}
-                    onSquareClick={() => handleMove(3)}
-                />
-                <Square
-                    value={squares[4]}
-                    onSquareClick={() => handleMove(4)}
-                />
-                <Square
-                    value={squares[5]}
-                    onSquareClick={() => handleMove(5)}
-                />
-            </div>
-            <div className="board-row">
-                <Square
-                    value={squares[6]}
-                    onSquareClick={() => handleMove(6)}
-                />
-                <Square
-                    value={squares[7]}
-                    onSquareClick={() => handleMove(7)}
-                />
-                <Square
-                    value={squares[8]}
-                    onSquareClick={() => handleMove(8)}
-                />
-            </div>
-            <button 
-                className = "reset"
-                onClick = {handleReset}
+            {Array(3).fill(null).map((_, row) => (
+                <div className="board-row" key={row}>
+                    {Array(3).fill(null).map((_, col) => {
+                        const squareIndex = row * 3 + col;
+                        return (
+                            <Square
+                                key={squareIndex}
+                                value={squares[squareIndex]}
+                                onSquareClick={() => handleMove(squareIndex)}
+                                isSelected={selectedSquare === squareIndex}
+                            />
+                        );
+                    })}
+                </div>
+            ))}
+            <button
+                className="reset"
+                onClick={handleReset}
             >
                 RESET
             </button>
