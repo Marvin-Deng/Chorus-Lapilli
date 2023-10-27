@@ -1,6 +1,6 @@
 import Square from './Square'
 import { calculateWinner, getWinningMoves } from '../utils/CalculateWinner'
-import { isValidMove, getWinningSquares } from '../utils/CalculateMove'
+import { isValidMove, isWinningSquare } from '../utils/CalculateMove'
 import { useState } from 'react'
 
 const Grid = () => {
@@ -51,9 +51,9 @@ const Grid = () => {
         }
         else if ((xIsNext && nextSquares[4] == 'X') || (!xIsNext && nextSquares[4] == 'O')) {
             const winningMoves = getWinningMoves(nextSquares[4], squares)
-            const winningSquares = getWinningSquares(nextSquares[4], squares, winningMoves)
-            
-            if (winningSquares.has(i)) {
+            const isPossibleMove = isWinningSquare(nextSquares[4], squares, winningMoves, i)
+
+            if (isPossibleMove) {
                 selectPiece(i)
             } 
             else if (selectedSquare === 4) {

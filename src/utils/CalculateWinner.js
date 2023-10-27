@@ -20,19 +20,20 @@ export function calculateWinner(squares) {
 }
 
 export function getWinningMoves(piece, squares) {
-    const winningMoves = []
-    lines.forEach(line => {
-        const [a, b, c] = line
+    const winningMoves = [];
+    for (let i = 0; i < lines.length; i++) {
+        const [a, b, c] = lines[i];
+
         if (squares[a] === null && squares[b] === piece && squares[c] === piece) {
-            winningMoves.push(a)
-        }
+            winningMoves.push(a);
+        } 
         else if (squares[b] === null && squares[a] === piece && squares[c] === piece) {
-            winningMoves.push(b)
-        }
+            winningMoves.push(b);
+        } 
         else if (squares[c] === null && squares[a] === piece && squares[b] === piece) {
-            winningMoves.push(c)
+            winningMoves.push(c);
         }
-    })
-    return winningMoves
+    }
+    return winningMoves;
 }
 

@@ -14,15 +14,14 @@ export function isValidMove(curr, dest) {
     return adjacentNumbers[curr].has(dest)
 }
 
-export function getWinningSquares(piece, squares, winningMoves) {
-    const winningSquares = new Set()
-    winningMoves.forEach(pos => {
-        adjacentNumbers[pos].forEach(possibleMove => {
-            if (squares[possibleMove] == piece) {
-                winningSquares.add(possibleMove)
-            }
-        });
-    });
-    winningSquares.add(4)
-    return winningSquares
+export function isWinningSquare(piece, squares, winningMoves, i) {
+    if (i === 4) {
+        return true
+    }
+    for (const pos of winningMoves) {
+        if (isValidMove(pos, i) && squares[i] === piece) {
+            return true
+        }
+    }
+    return false
 }
