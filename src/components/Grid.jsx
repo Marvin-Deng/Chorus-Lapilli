@@ -12,9 +12,9 @@ const Grid = () => {
     const winner = calculateWinner(squares)
     const currPiece = xIsNext ? "X" : "O"
 
-    let status = winner ? `Winner: ${winner}` : `Turn: ${currPiece}`
+    let status = winner ? `Winner: ${winner}` : `Player: ${currPiece}`
 
-    if (turn > 6 && squares[4] === currPiece) {
+    if (turn > 6 && squares[4] === currPiece && !winner) {
         status += " owns the center square"
     }
 
@@ -37,8 +37,7 @@ const Grid = () => {
                 return;
             }
             nextSquares[i] = currPiece;
-            setTurn(prevTurn => prevTurn + 1)
-            setXIsNext(!xIsNext)
+            playTurn()
         }
         else if (nextSquares[4] == currPiece) {
             if (squares[i] != null) {
@@ -64,6 +63,11 @@ const Grid = () => {
         setSquares(nextSquares)
     }
 
+    const playTurn = () => {
+        setXIsNext(!xIsNext)
+        setTurn(prevTurn => prevTurn + 1)
+    }
+
     const selectPiece = (i) => {
         if (squares[i] === currPiece) {
             setSelectedSquare(i)
@@ -75,12 +79,13 @@ const Grid = () => {
             nextSquares[i] = nextSquares[selectedSquare]
             nextSquares[selectedSquare] = null
             setSelectedSquare(null)
-            setXIsNext(!xIsNext)
+            playTurn()
         }
     }
 
     return (
         <div className="grid">
+            <div className="status"> Turn: {turn} </div>
             <div className="status">{status}</div>
             {Array(3).fill(null).map((_, row) => (
                 <div className="board-row" key={row}>
