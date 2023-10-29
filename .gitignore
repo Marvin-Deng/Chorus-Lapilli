@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Text files
+chorus-lapilli.txt
+tic-tac-toe.txt
